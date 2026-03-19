@@ -1,143 +1,29 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Site.com</title>
-
-  <style>
-    body {
-      font-family: Arial;
-      background: #f0f0f0;
-      margin: 0;
-    }
-
-    header {
-      background: #222;
-      color: white;
-      text-align: center;
-      padding: 15px;
-    }
-
-    section {
-      background: white;
-      margin: 20px;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    .card {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      text-align: center;
-      width: 150px;
-    }
-
-    img {
-      width: 100px;
-    }
-
-    input, button {
-      padding: 10px;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Site com APIs</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>
-  <h1>🌐 Site.com</h1>
-</header>
+    <h1>APIs</h1>
 
-<section>
-  <h2>⚡ Pokémons</h2>
-  <div id="pokemons"></div>
-</section>
+    <section>
+        <h2>🐱 Pokémon</h2>
+        <div id="pokemon"></div>
+    </section>
 
-<section>
-  <h2>🌍 Países</h2>
-  <div id="paises"></div>
-</section>
+    <section>
+        <h2>📝 Posts</h2>
+        <div id="posts"></div>
+    </section>
 
-<section>
-  <h2>🔍 Buscar Pokémon</h2>
-  <input type="text" id="nomePokemon" placeholder="Ex: pikachu">
-  <button onclick="buscarPokemon()">Buscar</button>
-  <div id="resultado"></div>
-</section>
+    <section>
+        <h2>👤 Usuários</h2>
+        <div id="users"></div>
+    </section>
 
-<script>
-  fetch('https://pokeapi.co/api/v2/pokemon?limit=8')
-    .then(res => res.json())
-    .then(dados => {
-
-      const container = document.getElementById('pokemons');
-
-      dados.results.forEach(pokemon => {
-
-        fetch(pokemon.url)
-          .then(res => res.json())
-          .then(pokeData => {
-
-            container.innerHTML += `
-              <div class="card">
-                <img src="${pokeData.sprites.front_default}">
-                <p>${pokeData.name}</p>
-              </div>
-            `;
-
-          });
-
-      });
-
-    });
-
-  fetch('https://restcountries.com/v3.1/all')
-    .then(res => res.json())
-    .then(dados => {
-
-      const container = document.getElementById('paises');
-
-      dados.slice(0, 8).forEach(pais => {
-
-        container.innerHTML += `
-          <div class="card">
-            <img src="${pais.flags.png}">
-            <p>${pais.name.common}</p>
-            <small>${pais.capital ? pais.capital[0] : 'Sem capital'}</small>
-          </div>
-        `;
-
-      });
-
-    });
-
-  function buscarPokemon() {
-
-    const nome = document.getElementById('nomePokemon').value.toLowerCase();
-
-    fetch(`https://pokeapi.co/api/v2/pokemon/${nome}`)
-      .then(res => res.json())
-      .then(poke => {
-
-        document.getElementById('resultado').innerHTML = `
-          <div class="card">
-            <img src="${poke.sprites.front_default}">
-            <h3>${poke.name}</h3>
-            <p>Altura: ${poke.height}</p>
-            <p>Peso: ${poke.weight}</p>
-          </div>
-        `;
-
-      })
-      .catch(() => {
-        document.getElementById('resultado').innerHTML = "❌ Pokémon não encontrado";
-      });
-  }
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
