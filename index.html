@@ -30,7 +30,6 @@
     cursor: crosshair;
   }
 
-  /* ===== HERO NAV ===== */
   nav {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -73,7 +72,6 @@
 
   nav ul a:hover { color: #fff; }
 
-  /* ===== HERO ===== */
   .hero {
     height: 100vh;
     display: flex;
@@ -181,7 +179,6 @@
     50% { transform: translateY(-40px) scale(1.5); opacity: 0.8; }
   }
 
-  /* ===== SECTION BASE ===== */
   section {
     min-height: 100vh;
     padding: 8rem 3rem 6rem;
@@ -214,7 +211,6 @@
     line-height: 1.8;
   }
 
-  /* ===== GRID LAYOUTS ===== */
   .grid-4 {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -227,7 +223,6 @@
     gap: 1.5rem;
   }
 
-  /* ===== LOADING & ERROR ===== */
   .loading {
     font-family: 'Space Mono', monospace;
     font-size: 0.75rem;
@@ -244,7 +239,6 @@
     display: inline-block;
   }
 
-  /* ===== POKÉMON SECTION ===== */
   #pokemon {
     background: var(--poke-dark);
     color: #fff;
@@ -384,7 +378,6 @@
     transition: width 1s ease;
   }
 
-  /* ===== STAR WARS SECTION ===== */
   #starwars {
     background: var(--sw-dark);
     color: #fff;
@@ -495,7 +488,6 @@
     max-width: 60%;
   }
 
-  /* ===== GAME OF THRONES SECTION ===== */
   #got {
     background: var(--got-stone);
     color: var(--got-parchment);
@@ -614,7 +606,6 @@
     text-transform: uppercase;
   }
 
-  /* ===== FOOTER ===== */
   footer {
     background: #000;
     padding: 3rem;
@@ -631,7 +622,6 @@
 
   footer p span { color: rgba(255,203,5,0.5); }
 
-  /* ===== DIVIDERS ===== */
   .section-divider {
     display: flex;
     align-items: center;
@@ -653,7 +643,6 @@
     opacity: 0.3;
   }
 
-  /* ===== ANIMATIONS on scroll ===== */
   .reveal {
     opacity: 0;
     transform: translateY(30px);
@@ -683,7 +672,6 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="#" class="logo">UNI<span>VERSOS</span></a>
   <ul>
@@ -693,7 +681,6 @@
   </ul>
 </nav>
 
-<!-- HERO -->
 <div class="hero">
   <div class="particles" id="particles"></div>
   <div class="hero-bg-text">∞</div>
@@ -708,7 +695,6 @@
   </div>
 </div>
 
-<!-- ===== POKÉMON ===== -->
 <section id="pokemon">
   <div class="section-divider" style="color: #FFCB05">
     <div class="div-line"></div>
@@ -723,7 +709,6 @@
   </div>
 </section>
 
-<!-- ===== STAR WARS ===== -->
 <section id="starwars">
   <div class="stars-bg" id="stars-bg"></div>
   <div class="section-divider" style="color: #00D4FF">
@@ -739,7 +724,6 @@
   </div>
 </section>
 
-<!-- ===== GAME OF THRONES ===== -->
 <section id="got">
   <div class="section-divider" style="color: #C9A84C">
     <div class="div-line"></div>
@@ -754,13 +738,11 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
-  <p>UNIVERSOS &nbsp;·&nbsp; <span>fetch + .then()</span> &nbsp;·&nbsp; Três APIs, uma página</p>
+  <p>UNIVERSOS &nbsp;·&nbsp; Três APIs &nbsp;·&nbsp; Uma página</p>
 </footer>
 
 <script>
-/* ===== PARTICLES ===== */
 const pContainer = document.getElementById('particles');
 for (let i = 0; i < 25; i++) {
   const p = document.createElement('div');
@@ -777,7 +759,6 @@ for (let i = 0; i < 25; i++) {
   pContainer.appendChild(p);
 }
 
-/* ===== STARS ===== */
 const sBg = document.getElementById('stars-bg');
 for (let i = 0; i < 120; i++) {
   const s = document.createElement('div');
@@ -795,7 +776,6 @@ for (let i = 0; i < 120; i++) {
   sBg.appendChild(s);
 }
 
-/* ===== SCROLL REVEAL ===== */
 const observer = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) e.target.classList.add('visible');
@@ -804,7 +784,6 @@ const observer = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-/* ===== TYPE COLORS ===== */
 const typeColors = {
   fire: '#FF6B35', water: '#4FC3F7', grass: '#66BB6A',
   electric: '#FFEE58', psychic: '#FF4081', ice: '#80DEEA',
@@ -814,7 +793,6 @@ const typeColors = {
   bug: '#9CCC65', ghost: '#7986CB', steel: '#78909C',
 };
 
-/* ===== 1. POKÉMON API ===== */
 const pokeGrid = document.getElementById('poke-grid');
 const pokeIds = [1,4,7,25,39,52,54,94,129,143,147,150];
 
@@ -860,7 +838,6 @@ Promise.all(pokeIds.map(fetchPokemon))
     pokeGrid.innerHTML = '<p class="error-msg" style="color:var(--poke-yellow)">ERRO AO CARREGAR POKÉMON<br><small>Verifique sua conexão.</small></p>';
   });
 
-/* ===== 2. STAR WARS API ===== */
 const swGrid = document.getElementById('sw-grid');
 const swIds  = [1,2,3,4,5,6,10,14,20];
 
@@ -904,10 +881,8 @@ Promise.all(swIds.map(fetchSWChar))
     swGrid.innerHTML = '<p class="error-msg" style="color:var(--sw-blue)">ERRO AO CARREGAR PERSONAGENS</p>';
   });
 
-/* ===== 3. GAME OF THRONES API ===== */
 const gotGrid = document.getElementById('got-grid');
 
-// IDs específicos de casas famosas
 const houseIds = [10, 11, 17, 229, 362, 395];
 
 function fetchHouse(id) {
