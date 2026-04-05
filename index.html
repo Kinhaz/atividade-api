@@ -1,29 +1,966 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Site com APIs</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNIVERSOS — Três Mundos, Uma Tela</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --poke-red: #E3350D;
+    --poke-yellow: #FFCB05;
+    --poke-dark: #1a0a00;
+    --sw-blue: #00D4FF;
+    --sw-gold: #C8A951;
+    --sw-dark: #000814;
+    --got-crimson: #8B0000;
+    --got-gold: #C9A84C;
+    --got-stone: #1C1C1C;
+    --got-parchment: #F5E6C8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: #0a0a0a;
+    font-family: 'Crimson Pro', serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ===== HERO NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  nav .logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 900;
+    letter-spacing: 0.4em;
+    color: #fff;
+    text-decoration: none;
+  }
+
+  nav .logo span { color: var(--poke-yellow); }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  nav ul a {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  nav ul a:hover { color: #fff; }
+
+  /* ===== HERO ===== */
+  .hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 60%, #1a0d00 0%, #000 70%);
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    font-family: 'Cinzel', serif;
+    font-size: clamp(6rem, 20vw, 18rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+    pointer-events: none;
+    user-select: none;
+    animation: drift 20s ease-in-out infinite;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-20px) rotate(1deg); }
+  }
+
+  .hero-content {
+    text-align: center;
+    z-index: 2;
+    animation: fadeUp 1.2s ease forwards;
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    color: var(--poke-yellow);
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3rem, 10vw, 8rem);
+    font-weight: 900;
+    color: #fff;
+    line-height: 0.9;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title .line2 {
+    display: block;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.6);
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 3rem;
+  }
+
+  .scroll-hint {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,255,255,0.3);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  .particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    border-radius: 50%;
+    background: var(--poke-yellow);
+    animation: float var(--dur) ease-in-out infinite var(--delay);
+    opacity: 0.4;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
+    50% { transform: translateY(-40px) scale(1.5); opacity: 0.8; }
+  }
+
+  /* ===== SECTION BASE ===== */
+  section {
+    min-height: 100vh;
+    padding: 8rem 3rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .section-desc {
+    font-size: 1.1rem;
+    font-weight: 300;
+    font-style: italic;
+    margin-bottom: 3rem;
+    max-width: 500px;
+    line-height: 1.8;
+  }
+
+  /* ===== GRID LAYOUTS ===== */
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ===== LOADING & ERROR ===== */
+  .loading {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    animation: pulse 1.5s infinite;
+  }
+
+  .error-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    opacity: 0.6;
+    padding: 2rem;
+    border: 1px dashed currentColor;
+    display: inline-block;
+  }
+
+  /* ===== POKÉMON SECTION ===== */
+  #pokemon {
+    background: var(--poke-dark);
+    color: #fff;
+  }
+
+  #pokemon::before {
+    content: 'POKÉMON';
+    position: absolute;
+    right: -2rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Cinzel', serif;
+    font-size: 8rem;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(255,203,5,0.08);
+    pointer-events: none;
+    letter-spacing: 0.1em;
+  }
+
+  #pokemon .section-label { color: var(--poke-yellow); }
+
+  #pokemon .section-title {
+    color: var(--poke-yellow);
+    text-shadow: 0 0 60px rgba(255,203,5,0.3);
+  }
+
+  #pokemon .section-desc { color: rgba(255,255,255,0.5); }
+
+  .poke-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,203,5,0.15);
+    border-radius: 2px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .poke-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,203,5,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .poke-card:hover { 
+    border-color: rgba(255,203,5,0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(255,203,5,0.1);
+  }
+
+  .poke-card:hover::before { opacity: 1; }
+
+  .poke-card img {
+    width: 100px;
+    height: 100px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 4px 12px rgba(255,203,5,0.3));
+    transition: transform 0.3s;
+  }
+
+  .poke-card:hover img { transform: scale(1.1) translateY(-4px); }
+
+  .poke-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #fff;
+    text-transform: capitalize;
+    margin: 0.8rem 0 0.5rem;
+  }
+
+  .poke-id {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: rgba(255,203,5,0.5);
+    letter-spacing: 0.2em;
+  }
+
+  .poke-types {
+    display: flex;
+    gap: 0.4rem;
+    justify-content: center;
+    margin-top: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .poke-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 1px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(255,203,5,0.1);
+    color: var(--poke-yellow);
+    border: 1px solid rgba(255,203,5,0.2);
+  }
+
+  .poke-stats {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .stat-bar-wrap { text-align: left; }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.2rem;
+  }
+
+  .stat-bar {
+    height: 2px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .stat-fill {
+    height: 100%;
+    background: var(--poke-yellow);
+    border-radius: 1px;
+    transition: width 1s ease;
+  }
+
+  /* ===== STAR WARS SECTION ===== */
+  #starwars {
+    background: var(--sw-dark);
+    color: #fff;
+  }
+
+  #starwars::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 20% 50%, rgba(0,212,255,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 30%, rgba(200,169,81,0.04) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .stars-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite var(--delay);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--min-op); }
+    50% { opacity: 1; }
+  }
+
+  #starwars .section-label { color: var(--sw-blue); }
+
+  #starwars .section-title {
+    color: var(--sw-gold);
+    text-shadow: 0 0 60px rgba(200,169,81,0.25);
+  }
+
+  #starwars .section-desc { color: rgba(255,255,255,0.45); }
+
+  .sw-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(0,212,255,0.12);
+    padding: 2rem;
+    position: relative;
+    transition: all 0.4s ease;
+    overflow: hidden;
+  }
+
+  .sw-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 0;
+    background: var(--sw-blue);
+    transition: height 0.4s ease;
+  }
+
+  .sw-card:hover {
+    border-color: rgba(0,212,255,0.3);
+    background: rgba(0,212,255,0.03);
+    transform: translateX(4px);
+    box-shadow: -8px 0 30px rgba(0,212,255,0.08);
+  }
+
+  .sw-card:hover::after { height: 100%; }
+
+  .sw-card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    filter: grayscale(0.3);
+  }
+
+  .sw-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--sw-gold);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .sw-detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .sw-detail:last-child { border-bottom: none; }
+
+  .sw-detail-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    color: rgba(0,212,255,0.6);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .sw-detail-val {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+    text-align: right;
+    max-width: 60%;
+  }
+
+  /* ===== GAME OF THRONES SECTION ===== */
+  #got {
+    background: var(--got-stone);
+    color: var(--got-parchment);
+  }
+
+  #got::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  #got .section-label { color: var(--got-gold); }
+
+  #got .section-title {
+    color: var(--got-gold);
+    text-shadow: 0 2px 30px rgba(201,168,76,0.2);
+  }
+
+  #got .section-desc { color: rgba(245,230,200,0.5); }
+
+  .got-card {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 2.5rem 2rem;
+    position: relative;
+    transition: all 0.4s ease;
+    overflow: hidden;
+  }
+
+  .got-card::before {
+    content: '⚔';
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    font-size: 1.2rem;
+    opacity: 0.15;
+    transition: opacity 0.3s, transform 0.4s;
+  }
+
+  .got-card:hover {
+    border-color: rgba(201,168,76,0.5);
+    background: rgba(0,0,0,0.6);
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.1);
+  }
+
+  .got-card:hover::before { opacity: 0.4; transform: rotate(15deg); }
+
+  .got-house {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: rgba(201,168,76,0.6);
+    margin-bottom: 0.5rem;
+  }
+
+  .got-name {
+    font-family: 'Cinzel', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--got-parchment);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .got-divider {
+    width: 40px;
+    height: 1px;
+    background: var(--got-gold);
+    margin: 1rem 0;
+    opacity: 0.4;
+  }
+
+  .got-detail-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin-bottom: 0.6rem;
+  }
+
+  .got-key {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: rgba(201,168,76,0.5);
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 0.15rem;
+    min-width: 80px;
+  }
+
+  .got-val {
+    font-size: 0.85rem;
+    color: rgba(245,230,200,0.75);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .got-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+
+  .got-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.5rem;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid rgba(201,168,76,0.2);
+    color: rgba(201,168,76,0.6);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: #000;
+    padding: 3rem;
+    text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.2);
+  }
+
+  footer p span { color: rgba(255,203,5,0.5); }
+
+  /* ===== DIVIDERS ===== */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+  }
+
+  .div-line {
+    height: 1px;
+    flex: 1;
+    background: currentColor;
+    opacity: 0.1;
+  }
+
+  .div-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    opacity: 0.3;
+  }
+
+  /* ===== ANIMATIONS on scroll ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 768px) {
+    nav ul { display: none; }
+    section { padding: 6rem 1.5rem 4rem; }
+    .grid-4, .grid-3 { grid-template-columns: 1fr 1fr; }
+    .hero-title { font-size: 3.5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .grid-4, .grid-3 { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-    <h1>APIs</h1>
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">UNI<span>VERSOS</span></a>
+  <ul>
+    <li><a href="#pokemon">Pokémon</a></li>
+    <li><a href="#starwars">Star Wars</a></li>
+    <li><a href="#got">Westeros</a></li>
+  </ul>
+</nav>
 
-    <section>
-        <h2>🐱 Pokémon</h2>
-        <div id="pokemon"></div>
-    </section>
+<!-- HERO -->
+<div class="hero">
+  <div class="particles" id="particles"></div>
+  <div class="hero-bg-text">∞</div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Três APIs — Três Mundos</p>
+    <h1 class="hero-title">
+      UNI
+      <span class="line2">VERSOS</span>
+    </h1>
+    <p class="hero-subtitle">Pokémon · Star Wars · Game of Thrones</p>
+    <p class="scroll-hint">↓ &nbsp; role para explorar &nbsp; ↓</p>
+  </div>
+</div>
 
-    <section>
-        <h2>📝 Posts</h2>
-        <div id="posts"></div>
-    </section>
+<!-- ===== POKÉMON ===== -->
+<section id="pokemon">
+  <div class="section-divider" style="color: #FFCB05">
+    <div class="div-line"></div>
+    <span class="div-num">01 / 03</span>
+    <div class="div-line"></div>
+  </div>
+  <p class="section-label reveal">PokéAPI — pokeapi.co</p>
+  <h2 class="section-title reveal reveal-delay-1">Pokédex</h2>
+  <p class="section-desc reveal reveal-delay-2">Doze criaturas da primeira geração. Clique num card para ver os stats completos.</p>
+  <div class="grid-4" id="poke-grid">
+    <p class="loading" style="color:var(--poke-yellow)">CARREGANDO POKÉMON...</p>
+  </div>
+</section>
 
-    <section>
-        <h2>👤 Usuários</h2>
-        <div id="users"></div>
-    </section>
+<!-- ===== STAR WARS ===== -->
+<section id="starwars">
+  <div class="stars-bg" id="stars-bg"></div>
+  <div class="section-divider" style="color: #00D4FF">
+    <div class="div-line"></div>
+    <span class="div-num">02 / 03</span>
+    <div class="div-line"></div>
+  </div>
+  <p class="section-label reveal">SWAPI — swapi.dev</p>
+  <h2 class="section-title reveal reveal-delay-1">Personagens</h2>
+  <p class="section-desc reveal reveal-delay-2">Figuras lendárias de uma galáxia muito, muito distante.</p>
+  <div class="grid-3" id="sw-grid">
+    <p class="loading" style="color:var(--sw-blue)">CARREGANDO PERSONAGENS...</p>
+  </div>
+</section>
 
-    <script src="script.js"></script>
+<!-- ===== GAME OF THRONES ===== -->
+<section id="got">
+  <div class="section-divider" style="color: #C9A84C">
+    <div class="div-line"></div>
+    <span class="div-num">03 / 03</span>
+    <div class="div-line"></div>
+  </div>
+  <p class="section-label reveal">Ice & Fire API — anapioficeandfire.com</p>
+  <h2 class="section-title reveal reveal-delay-1">Casas de Westeros</h2>
+  <p class="section-desc reveal reveal-delay-2">As grandes casas nobres que disputam o Trono de Ferro.</p>
+  <div class="grid-3" id="got-grid">
+    <p class="loading" style="color:var(--got-gold)">CARREGANDO AS CASAS...</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>UNIVERSOS &nbsp;·&nbsp; <span>fetch + .then()</span> &nbsp;·&nbsp; Três APIs, uma página</p>
+</footer>
+
+<script>
+/* ===== PARTICLES ===== */
+const pContainer = document.getElementById('particles');
+for (let i = 0; i < 25; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.cssText = `
+    left: ${Math.random()*100}%;
+    top: ${Math.random()*100}%;
+    --dur: ${3 + Math.random()*4}s;
+    --delay: ${Math.random()*4}s;
+    background: ${['#FFCB05','#00D4FF','#C9A84C','#fff'][Math.floor(Math.random()*4)]};
+    width: ${1 + Math.random()*2}px;
+    height: ${1 + Math.random()*2}px;
+  `;
+  pContainer.appendChild(p);
+}
+
+/* ===== STARS ===== */
+const sBg = document.getElementById('stars-bg');
+for (let i = 0; i < 120; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2 + 0.5;
+  s.style.cssText = `
+    left: ${Math.random()*100}%;
+    top: ${Math.random()*100}%;
+    width: ${size}px;
+    height: ${size}px;
+    --dur: ${2 + Math.random()*4}s;
+    --delay: ${Math.random()*4}s;
+    --min-op: ${0.1 + Math.random()*0.3};
+  `;
+  sBg.appendChild(s);
+}
+
+/* ===== SCROLL REVEAL ===== */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ===== TYPE COLORS ===== */
+const typeColors = {
+  fire: '#FF6B35', water: '#4FC3F7', grass: '#66BB6A',
+  electric: '#FFEE58', psychic: '#FF4081', ice: '#80DEEA',
+  dragon: '#7E57C2', dark: '#5D4037', fairy: '#F48FB1',
+  normal: '#BDBDBD', fighting: '#EF5350', flying: '#90CAF9',
+  poison: '#AB47BC', ground: '#BCAAA4', rock: '#8D6E63',
+  bug: '#9CCC65', ghost: '#7986CB', steel: '#78909C',
+};
+
+/* ===== 1. POKÉMON API ===== */
+const pokeGrid = document.getElementById('poke-grid');
+const pokeIds = [1,4,7,25,39,52,54,94,129,143,147,150];
+
+function fetchPokemon(id) {
+  return fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+    .then(res => res.json());
+}
+
+Promise.all(pokeIds.map(fetchPokemon))
+  .then(pokemons => {
+    pokeGrid.innerHTML = '';
+    pokemons.forEach((p, i) => {
+      const types = p.types.map(t => t.type.name);
+      const hp    = p.stats.find(s => s.stat.name === 'hp').base_stat;
+      const atk   = p.stats.find(s => s.stat.name === 'attack').base_stat;
+      const def   = p.stats.find(s => s.stat.name === 'defense').base_stat;
+      const spd   = p.stats.find(s => s.stat.name === 'speed').base_stat;
+
+      const card = document.createElement('div');
+      card.className = 'poke-card reveal';
+      card.style.transitionDelay = `${i * 0.05}s`;
+      card.innerHTML = `
+        <img src="${p.sprites.other['official-artwork'].front_default || p.sprites.front_default}" alt="${p.name}" loading="lazy">
+        <div class="poke-name">${p.name}</div>
+        <div class="poke-id">#${String(p.id).padStart(3,'0')}</div>
+        <div class="poke-types">
+          ${types.map(t => `<span class="poke-type" style="background:${(typeColors[t]||'#888')}22;color:${typeColors[t]||'#aaa'};border-color:${(typeColors[t]||'#888')}44">${t}</span>`).join('')}
+        </div>
+        <div class="poke-stats">
+          ${[['HP',hp],['ATK',atk],['DEF',def],['SPD',spd]].map(([label,val]) => `
+            <div class="stat-bar-wrap">
+              <div class="stat-label"><span>${label}</span><span>${val}</span></div>
+              <div class="stat-bar"><div class="stat-fill" style="width:${(val/255)*100}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      pokeGrid.appendChild(card);
+      setTimeout(() => observer.observe(card), 50);
+    });
+  })
+  .catch(() => {
+    pokeGrid.innerHTML = '<p class="error-msg" style="color:var(--poke-yellow)">ERRO AO CARREGAR POKÉMON<br><small>Verifique sua conexão.</small></p>';
+  });
+
+/* ===== 2. STAR WARS API ===== */
+const swGrid = document.getElementById('sw-grid');
+const swIds  = [1,2,3,4,5,6,10,14,20];
+
+const icons = { '1': '🤖', '2': '🧙', '3': '🌌', '4': '⚔️', '5': '🔫', '6': '🎭', '10': '👸', '14': '🛸', '20': '💫' };
+
+function fetchSWChar(id) {
+  return fetch(`https://swapi.dev/api/people/${id}/`)
+    .then(res => res.json());
+}
+
+Promise.all(swIds.map(fetchSWChar))
+  .then(chars => {
+    swGrid.innerHTML = '';
+    chars.forEach((c, i) => {
+      if (c.detail) return;
+      const card = document.createElement('div');
+      card.className = 'sw-card reveal';
+      card.style.transitionDelay = `${i * 0.07}s`;
+      card.innerHTML = `
+        <div class="sw-card-icon">${icons[swIds[i]] || '✨'}</div>
+        <div class="sw-card-title">${c.name}</div>
+        ${[
+          ['Nascimento', c.birth_year],
+          ['Gênero', c.gender === 'male' ? 'Masculino' : c.gender === 'female' ? 'Feminino' : c.gender],
+          ['Altura', c.height !== 'unknown' ? `${c.height} cm` : '—'],
+          ['Peso', c.mass !== 'unknown' ? `${c.mass} kg` : '—'],
+          ['Cabelo', c.hair_color],
+          ['Olhos', c.eye_color],
+        ].map(([k,v]) => `
+          <div class="sw-detail">
+            <span class="sw-detail-key">${k}</span>
+            <span class="sw-detail-val">${v}</span>
+          </div>
+        `).join('')}
+      `;
+      swGrid.appendChild(card);
+      setTimeout(() => observer.observe(card), 50);
+    });
+  })
+  .catch(() => {
+    swGrid.innerHTML = '<p class="error-msg" style="color:var(--sw-blue)">ERRO AO CARREGAR PERSONAGENS</p>';
+  });
+
+/* ===== 3. GAME OF THRONES API ===== */
+const gotGrid = document.getElementById('got-grid');
+
+// IDs específicos de casas famosas
+const houseIds = [10, 11, 17, 229, 362, 395];
+
+function fetchHouse(id) {
+  return fetch(`https://anapioficeandfire.com/api/houses/${id}`)
+    .then(res => res.json());
+}
+
+Promise.all(houseIds.map(fetchHouse))
+  .then(houses => {
+    gotGrid.innerHTML = '';
+    houses.forEach((h, i) => {
+      const words    = h.words || '—';
+      const region   = h.region || '—';
+      const seats    = h.seats?.length ? h.seats.join(', ') : '—';
+      const titles   = h.titles?.filter(t => t).slice(0,3) || [];
+      const coatArms = h.coatOfArms || '—';
+
+      const card = document.createElement('div');
+      card.className = 'got-card reveal';
+      card.style.transitionDelay = `${i * 0.08}s`;
+      card.innerHTML = `
+        <div class="got-house">Casa</div>
+        <div class="got-name">${h.name}</div>
+        <div class="got-divider"></div>
+        <div class="got-detail-row">
+          <span class="got-key">Palavras</span>
+          <span class="got-val">"${words}"</span>
+        </div>
+        <div class="got-detail-row">
+          <span class="got-key">Região</span>
+          <span class="got-val">${region}</span>
+        </div>
+        <div class="got-detail-row">
+          <span class="got-key">Sede</span>
+          <span class="got-val">${seats}</span>
+        </div>
+        ${coatArms !== '—' ? `
+        <div class="got-detail-row">
+          <span class="got-key">Brasão</span>
+          <span class="got-val">${coatArms.length > 80 ? coatArms.slice(0,80)+'…' : coatArms}</span>
+        </div>` : ''}
+        ${titles.length ? `
+        <div class="got-tags">
+          ${titles.map(t => `<span class="got-tag">${t.length > 30 ? t.slice(0,30)+'…' : t}</span>`).join('')}
+        </div>` : ''}
+      `;
+      gotGrid.appendChild(card);
+      setTimeout(() => observer.observe(card), 50);
+    });
+  })
+  .catch(() => {
+    gotGrid.innerHTML = '<p class="error-msg" style="color:var(--got-gold)">ERRO AO CARREGAR AS CASAS</p>';
+  });
+</script>
 </body>
 </html>
